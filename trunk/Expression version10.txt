@@ -1,0 +1,315 @@
+grammar Mini;
+
+options {
+  language = C;
+}
+@header
+{
+#include"GRLIST.H"
+#include <iostream>
+#include<string>
+using namespace std;
+
+}
+@members{ Graph g(7);
+		   int c_o=0;
+		  
+		}
+
+
+evaluator:
+expression{
+      cout<<"start:"<<endl;
+	 //cout<<$term.result;
+	 g.print();
+      }
+	  EOF;
+              
+
+
+term returns [string result,string s]:
+     identifier{
+	 $s.assign($identifier.result);                  // This strange reassignment was done to remove the occuring of some errors(segmentation core)
+
+	 $result.assign($s);
+	 } 
+      | '(' expression')'  {
+	  $s.assign($expression.node);
+	 $result.assign($s);
+	  }
+	  |
+      value  {
+     $s.assign($value.result);
+	 $result.assign($s);
+	 }
+      //| array 
+      //| boole
+      //| pair
+      
+      ; 	  
+	  
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  negation returns[string node,string s] @init{bool negation=false;int count=0;}:
+
+('not'{  negation=true;  count++;}
+            )* term{
+				  $s.assign( $term.result);    // This strange reassignment was done to remove the occuring of some errors
+	              $node.assign($s);
+				  if(negation)
+				  { for(int i=1;i<=count;i++)
+                   {g.setEdge(c_o,0,"not" );
+				    g.setEdge(c_o,i,$node);
+					$node="not";
+				   }
+				  c_o++; 
+				  }
+				  
+		 }
+		 
+;
+	  
+
+	  
+	  //******************************************************************************************
+	  //******************************************************************************************
+	  //******************************************************************************************
+unary returns[string node,string s] @init{bool positive=true;int count=0;}:
+
+('+'|'-'{    count++;
+             positive=false;})* negation{
+				  $s.assign( $negation.node);    // This strange reassignment was done to remove the occuring of some errors
+	              $node.assign($s);
+				  if(!positive)
+				  {
+				   for(int i=1;i<=count;i++)
+                   {g.setEdge(c_o,0,"-" );
+				    g.setEdge(c_o,i,$node);
+					$node="-";
+				   }
+				  c_o++; 
+		 }
+		 }
+;
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+
+mult returns[string node,string s]@init{ bool mul=true;int c_n=1;}:
+	op1=unary 
+	{$s.assign( $op1.node);
+	$node.assign( $s);              //$node=$op1.node
+	cout<<"op1"<<endl;
+	cout<<$op1.node<<endl;
+	
+    }
+	('*' op2=unary {
+	cout<<"op2"<<endl;
+	cout<<$op2.node<<endl;
+	if(mul){
+	g.setEdge(c_o,0,"*" );
+	g.setEdge(c_o,c_n,$node );
+    c_n++;
+	g.setEdge(c_o,c_n,$op2.node );
+	$node="*";
+	c_o++;
+	cout<<$node<<endl;mul=false;}
+	else
+	{   c_n++;
+	g.setEdge(c_o-1,c_n,$op2.node );
+       cout<<$node<<endl;}
+           }       
+      )*
+       ;   
+        
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+
+addmult returns [string node,string s]   @init{bool add=true,sub=true;int c_na=1,c_ns=1;int temp_a=0;int temp_s=0;int replace_a=0,replace_s=0;}:   
+    op1=mult{
+	$s.assign( $op1.node);
+	$node.assign($s);
+	cout<<"op1_m"<<endl;
+	cout<<$node<<endl;	
+	
+    }
+	('+'op2=mult{                   
+                   if(add)
+                   {
+				   
+				   cout<<c_o<<endl;
+                   g.setEdge(c_o,0,"+" );                               
+                   g.setEdge(c_o,c_na,$node );
+				   c_na++;
+
+				   g.setEdge(c_o,c_na,$op2.node );
+				   $node="+";
+                   c_o++;
+				                     
+				   add=false;					  // note that c_n is the index of an operand starting from 1
+                   replace_a=c_o;                 // store the value of c_o to replace_a so that we don't increment c_o in the else expression
+				   }
+                  else  
+                  { 
+				  temp_a++;		                   // temp_a is used to count the number of time this operator occurs after the first one,ie how many (pluses-1) I have in the given expression
+			      c_na++;
+				 
+					   g.setEdge(replace_a-temp_a,c_na,$op2.node );
+					   replace_a++;}
+                    }  
+					
+		
+			  | '-'op2=mult{  if(sub)
+                   {
+				   cout<<"sub"<<endl<<c_ns<<endl;
+				   g.setEdge(c_o,0,"-" );                               
+                   g.setEdge(c_o,c_ns,$node );
+				   c_ns++;
+				   g.setEdge(c_o,c_ns,$op2.node );
+				   $node="-";
+                   
+				   c_o++;
+				   
+				   sub=false;
+				   replace_s=c_o;
+                   }
+                  else  
+                  { 
+				  temp_s++;
+				  c_ns++;
+				  g.setEdge(replace_s-temp_s,c_ns,$op2.node );
+                    replace_s++;} 
+					}
+	     	     )*
+      ;
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+
+	 comparision  returns [string node,string s]   @init{bool lt=true,gt=true;int c_lt=1,c_gt=1;int temp_lt=0;int temp_gt=0;int replace_lt=0;} : 
+	  op1=addmult 
+	  { 
+	  	$s.assign( $op1.node);
+	    $node.assign($s);
+	     
+	  }
+	  
+	  ('lt' op2=addmult 
+	  {
+	  if(lt)
+                   {
+				   cout<<c_o<<endl;
+                   g.setEdge(c_o,0,"lt" );                               
+                   g.setEdge(c_o,c_lt,$node );
+				   c_lt++;
+				   g.setEdge(c_o,c_lt,$op2.node );
+				   $node="lt";
+                   c_o++;
+ 
+				   lt=false;					  // note that c_n is the index of an operand starting from 1
+                   replace_lt=c_o;
+				   }
+                  else  
+                  { 
+				  temp_lt++;		                   // temp_a is used to count the number of time this operator occurs after the first one,ie how many (pluses-1) I have in the given expression
+			      
+				 c_lt++;
+				 
+					   g.setEdge(replace_lt-temp_lt,c_lt,$op2.node );
+					   replace_lt++;
+					   }
+                    }  
+	  
+	  
+	  )*
+      ;
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  //*****************************************************************************************
+	  
+	  expression returns [string node,string s]   @init{bool andd=true,orr=true;int c_and=1,c_or=1;int temp_and=0;int temp_or=0;int replace_and=0;} : 
+	  op1=comparision 
+	  { 
+	  	$s.assign( $op1.node);
+	    $node.assign($s);
+	     
+	  }
+	  
+	  ('and' op2=comparision 
+	  {
+	  if(andd)
+                   {
+				   cout<<c_o<<endl;
+                   g.setEdge(c_o,0,"and" );                               
+                   g.setEdge(c_o,c_and,$node );
+				   c_and++;
+				   g.setEdge(c_o,c_and,$op2.node );
+				   $node="and";
+                   c_o++;
+				   andd=false;					  
+                   replace_and=c_o;
+				   }
+                  else  
+                  { 
+				  temp_and++;		                   // temp_and is used to count the number of time this operator occurs after the first one,ie how many (pluses-1) I have in the given expression
+			      
+				  c_and++;
+			          g.setEdge(replace_and-temp_and,c_and,$op2.node );                   
+                   
+					   replace_and++;
+					   }
+                    }  
+	  
+	  
+	  )*
+      ;
+
+ 
+element : paire | vecteur | value | boole|identifier;
+
+  paire  : ('{' ( element ) ',' (element) '}')
+      ;
+  vecteur   : ('[' (element ) (',' (element))* ']')  | (identifier ('[' (element ) (',' (element))* ']'))
+      ;
+  value  returns [string result,string s] : 
+(INTEGER{  
+ uint8_t *widget; 	  	  
+ widget = ($INTEGER.text->chars); 
+ $s.append(1,*widget);
+ $result.assign($s); 
+ }                
+ )+
+      ;
+  boole   : 'true' | 'false'
+      ;
+
+identifier returns[string result,string s]:
+
+L0=LETTER{
+ uint8_t *widget; 	  
+ widget = ($L0.text->chars); 
+ $s.append(1,*widget);
+ $result.assign($s); }
+ 
+ (L1=LETTER{
+ uint8_t *widget; 	  
+ widget = ($L1.text->chars); 
+ $s.append(1,*widget);
+ $result.assign($s); 
+ }
+   INTEGER{
+ uint8_t *widget; 	  
+ widget = ($INTEGER.text->chars); 
+ $s.append(1,*widget);
+ $result.assign($s); 
+ }
+   )*
+  ;
+
+INTEGER : ('0'..'9');
+
+LETTER:('a'..'z'|'A'..'Z');
+
+WS : (' '|'\r'|'\t'|'\u000C'|'\n' | 'f')+ {$channel = HIDDEN;};
