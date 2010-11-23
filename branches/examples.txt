@@ -1,0 +1,52 @@
+Begin
+var RESULT takes 1;
+loop(i:2->n,+1)
+do
+[ RESULT takes RESULT*i;]
+end
+
+Begin 
+var int1, int2;
+var a[];
+var p{};
+int1 takes 2;
+int2 takes 4;
+array takes [int1,int2];
+p takes {int2, int1};
+var int3 takes int1 + int2 * int1;
+end
+
+Begin
+var x,y,z,sum;
+var average;
+var a[];
+x takes 2*3*9+6*-7-2*4*6;
+y takes 2+(6*7*9);
+z takes -2*-5*-6;
+
+sum takes x+y+z;
+average takes sum/3;
+var a[];
+a[0] takes sum;
+a[1] takes average;
+end
+
+
+Begin
+var p{};
+var d[];
+p takes {[1,2,3],3};
+d takes [1,2,3,4,5];
+var TEMP[];
+is(d[0] lt b and p{1} gte 4)
+do
+[
+loop(i:1->n,+1)
+do[
+TEMP[i] takes d[i];
+]
+]
+oris(d[0] lt 5)
+do[d[0] takes 0;]
+isnot do [p{0} takes 1;]
+end
