@@ -1,0 +1,36 @@
+Overall: B- for now, deferred for your reply!
+ 
+It looks like you've done a good amount of work and you did not integrate it well yet. 
+I am not sure what all your .txt files are for. 
+I opened them to be surprized they are all grammar files.
+Which one do you want me to read?
+Did you switch to implementing Mini?
+
+makefile.txt:
+You have a makefile that is built around Mini.g, however, there is
+no Mini.g in your code. Did you forget checking that in? 
+All the .txt files do not look like they are implementing Mini. 
+Anyway, your rules should be general and not specific to few .c/cpp files. I am not sure the rule at line 8 gives you what you want. 
+What if I edited a .c file and included a new header? I have to go and edit the makefile for that also? Check how to generate automatic 
+dependencies in the make slides. 
+
+
+
+graph.h
+good work here. separate your implementation from your header files and move your function implementation to a .cpp file. 
+not a good choice of variable names especially when you pass nam to set name. Did you know you can pass name and use this->name = name;
+think again of your copy function. it is cumbersome to use an array to do this especially that you are not deleting the array when you are done!
+What do you want to do on line 186?
+
+line 195: check the find algorithm in stl.
+
+GRLIST.h
+There is another class here called Graph. Which one are you using?
+
+I will wait for your feedback to complete my comments.
+
+
+
+
+
+
