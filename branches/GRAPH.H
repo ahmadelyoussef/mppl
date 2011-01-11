@@ -5,6 +5,7 @@
 #include <vector>
 #include <stack>
 #include <string>
+
 #include <iostream>
 
 using namespace std;
@@ -56,6 +57,8 @@ class Node
 {
 public:
 string name;
+int index;
+bool found;
 vector<Edge> adjNodeList;//list of outgoing edges for this vertex
 enum Status status;//used in dfs to mark the node visited
 
@@ -64,9 +67,10 @@ Node(string id)
 {
 name = id;
 status = NOT_VISITED;
+found=false;
 }
 Node()
-{name = ""; status = NOT_VISITED;}
+{name = ""; status = NOT_VISITED; index=0;found=false;}
 //do not del the adj nodes here...they will be deleted by graph destructor
 ~Node()
 {
@@ -112,9 +116,9 @@ return adjNodeList;
 }
 
 //displays all adjacent verticies of this vertex
-void displayList()
+void visit()
 {
-if(adjNodeList.size()>0)
+/*if(adjNodeList.size()>0)
 {Edge edg1 = adjNodeList[0];
 cout << name << " -> " << edg1.getDstNode()->getName();}
 
@@ -122,8 +126,8 @@ for(unsigned int i=1 ; i < adjNodeList.size() ; i++)
 {
 Edge edg = adjNodeList[i];
 cout << " -> " << edg.getDstNode()->getName();
-}
-
+}*/
+status=VISITED;
 }
 };
 
@@ -202,6 +206,17 @@ return nodeList[i];
 return NULL;
 }
 
+Node* findNodeByName1(string name,int &index)
+{
+
+for( int i = index ; i < nodeList.size() ; i++)
+if(nodeList[i]->getName() == name && !nodeList[i]->found)
+{ index=i+1;  nodeList[i]->found=true;
+return nodeList[i];
+}
+   return NULL;
+}
+
 
 Graph()
 {
@@ -228,23 +243,29 @@ void appendTo( Graph &g )
         {
                 (*(nodeList[i])).copy(*myAr[i]);
                 g.addNewNode(myAr[i]);
+
         }
 
 
 }
 
 
-void displayGraph()
-{
-for(unsigned int i=0 ; i < nodeList.size() ; i++)
+
+
+void DFS(Node*n)
 {
 
-nodeList[i]->displayList();
-if(nodeList[i]->adjNodeList.size()!=0)cout<<endl;
+n->visit();
+for(int i=0;i<n->adjNodeList.size();i++)
+{
+
+Edge edg=n->adjNodeList[i];
+if( edg.getDstNode()->status==NOT_VISITED)
+DFS(edg.getDstNode());
 
 }
-
 }
+
 
 
 };
@@ -252,3 +273,5 @@ if(nodeList[i]->adjNodeList.size()!=0)cout<<endl;
 
 
 #endif
+
+

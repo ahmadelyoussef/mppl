@@ -3,7 +3,7 @@
 #include<string>
 #include    "MiniParser.h"
 int ANTLR3_CDECL main        (int argc, char *argv[])
-{ 
+{
 
     pANTLR3_UINT8            fName;
 
@@ -25,7 +25,7 @@ int ANTLR3_CDECL main        (int argc, char *argv[])
     //
     if (argc < 2 || argv[1] == NULL)
     {
-                fName        =(pANTLR3_UINT8)"./input.txt"; // Note in VS2005 debug, working directory must be configured
+                fName        =(pANTLR3_UINT8)"input.txt"; // Note in VS2005 debug, working directory must be configured
     }
     else
     {
@@ -33,7 +33,7 @@ int ANTLR3_CDECL main        (int argc, char *argv[])
     }
 
     input        = antlr3AsciiFileStreamNew(fName);
-
+	
     if ( input == NULL)
     {
             fprintf(stderr, "Failed to open file %s\n", (char *)fName);
@@ -78,3 +78,5 @@ int ANTLR3_CDECL main        (int argc, char *argv[])
 
     return 0;
 }
+
+
