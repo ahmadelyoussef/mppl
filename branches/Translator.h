@@ -1,0 +1,125 @@
+namespace Translator 
+{
+	string Var = "Variable";
+	string W="a";
+	bool isRoot = true;
+	typedef ProgGraph<string,string> GraphZ;
+	GraphZ graphZ;
+	Graph ourGraph;
+	
+	
+	static GraphZ::ProgNode * translateNode(Node * n)
+	{
+		if (n->getType() == "Variable")
+		{
+			
+			GraphZ::ProgVar * a = new GraphZ::ProgVar(Var,n->name);
+			return a;
+			
+		}
+		else if (n->getType()=="Literal")
+		{
+			GraphZ::ProgLit * a = new GraphZ::ProgLit(Lit,n->name);
+			return a;
+		}
+		else if (n->getType()=="Expression")
+		{
+			GraphZ::ProgExpr * a = new GraphZ::ProgExpr(n->name);
+			return a;
+		}
+		
+		else 
+		{
+			GraphZ::ProgStmt * a = new GraphZ::ProgStmt(n->name);
+			return a;
+		}
+		
+	}
+	// All nodes are destination nodes except the root node. isRoot is there to avoid creating some nodes twice and create root node only in the beginning
+	static void traverseNTranslate (Node* n )
+	{
+		n->visitB();
+		if (isRoot)
+		{
+			graphZ.addNode(translateNode (n)); 
+			isRoot = false;
+		}
+	    for(int i=0;i<n->adjNodeList.size();i++)
+		{
+			Edge edg=n->adjNodeList[i];
+			if( edg.getDstNode()->status==NOT_VISITED)
+			{
+				graphZ.addNode(translateNode(edg.getDstNode())); // Translate destination node and add it to graph 
+				graphZ.addEdge(translateNode(n),translateNode(edg.getDstNode()),n->name);		//Translate origin and destination node to give them as arguments to addEdge and create an edge between them
+				traverseNTranslate(edg.getDstNode());
+			}                         
+		}
+		
+	}
+	
+	static void translatetoZ (Graph &a , GraphZ &b)
+	{
+		traverseNTranslate(a.nodeList[0]);
+		b=graphZ;
+	}
+	
+	static Node* translateProgNode (GraphZ::ProgNode* a)
+	{
+		GraphZ::NodeType myType = a->type();
+		if (myType == Variable)
+		{
+			Node* b = new Node("Variable");
+			return b;
+		}
+		else if (myType == Literal)
+		{
+			Node* b = new Node("Literal");
+			return b;
+		}
+		else if (myType == Expression)
+		{
+			Node* b = new Node("Expression");
+			return b;
+		}
+		else 
+		{
+			Node* b = new Node("Statement");
+			return b;
+		}
+
+	
+	}
+	
+	static bool translateZ (ProgGraph & pg)  {
+		for (int i = 0; i < pg.vertices.size(); i++) {
+			while (!s.empty()) {
+				ProgNode * node = s.top();
+				
+					ourGraph.addNewNode(translateProgNode(node)); // translate node and add to Graph;
+				
+				s.pop();
+				if (!visit(node))
+					return true;
+				node->setVisited(color);
+				
+				list<ProgEdge*> & edges = node->edges;
+				ProgEdgeIter it = edges.begin();
+				for (; it != edges.end(); it++) {
+					ProgEdge * edge = *it;
+					if (!visit(edge))
+						return true;
+					if (!edge->to.isVisited(color))
+						s.push(&edge->to);
+				}
+			}
+			if (pg.vertices[i] == NULL)
+				continue;
+			if (pg.vertices[i]->isVisited(color) )
+				continue;
+			s.push(pg.vertices[i]);
+		}
+	}
+	
+	
+	
+}
