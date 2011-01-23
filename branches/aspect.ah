@@ -1,7 +1,7 @@
 #include<fstream>
 #include<iostream>
-#include"../Graph/GRAPH.H"
-#include <cstdlib>
+#include"GRAPH.H"
+#include <stdlib.h>
 #include <stdio.h>
 using namespace std;
 
@@ -22,11 +22,9 @@ aspect dot {
 	outfile.open("graph.dot",ios::app);
        if(node.name=="0")
           zero_found=true;
-        if(node.name=="Begin")
-{ 
+        if(node.name=="Begin") 
            outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=circle,rank=sink,style=filled,color=white];"<<endl;
-cout << "HELLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOO" << endl;
- }       
+        
         else if(node.name=="Declaration"|| node.name=="Assignment"|| node.name=="conditionalStatement"|| node.name=="Loop")
            outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=rectangle,rank=sink,style=filled,color=grey];"<<endl;
 

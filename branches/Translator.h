@@ -1,14 +1,32 @@
 namespace Translator 
 {
+	/* *\namespace Translator
+	 *\brief Contains functions that are used in the translation from one graph type to another
+	 */
 	string Var = "Variable";
 	string W="a";
+/* *\var isRoot
+ *\brief Used in the traversal to know that node is root
+ * All nodes are destination nodes except the root node. isRoot is there to avoid creating some nodes twice and create root node only in the beginning
+*/
 	bool isRoot = true;
+	/**\typedef GraphZ
+	 *\brief Defining a ProgGraph<string,string> as GraphZ
+	 
+	 */
 	typedef ProgGraph<string,string> GraphZ;
 	GraphZ graphZ;
 	Graph ourGraph;
+	/**\file Translator.h
+	 *\brief Contains the Translator functions that convert a graph of our format to the supplied one  
+	 */
 	
-	
-	static GraphZ::ProgNode * translateNode(Node * n)
+	/**\function translateNode 
+	 *\brief Translate node from Node to ProgNode
+	 *\param Node to be translated
+	 *\return Resulting ProgNode
+	 */
+	GraphZ::ProgNode * translateNode(Node * n)
 	{
 		if (n->getType() == "Variable")
 		{
@@ -35,8 +53,11 @@ namespace Translator
 		}
 		
 	}
-	// All nodes are destination nodes except the root node. isRoot is there to avoid creating some nodes twice and create root node only in the beginning
-	static void traverseNTranslate (Node* n )
+	/**\function traverseNTranslate 
+	 *\brief Traverses the Graph and translates it to a ProgGraph and stores it in graphZ
+	 *\param Root Node on which to start the traversal
+	 */
+	 void traverseNTranslate (Node* n )
 	{
 		n->visitB();
 		if (isRoot)
@@ -56,27 +77,36 @@ namespace Translator
 		}
 		
 	}
-	
-	static void translatetoZ (Graph &a , GraphZ &b)
+	/**\function translatetoZ 
+	 *\brief Calls traverseNTranslate and stores graphZ into the passed GraphZ argument
+	 *\param a Graph to translate
+	 *\param b GraphZ in which the resulting graph will be stored.
+	 */
+	void translatetoZ (Graph &a , GraphZ &b)
 	{
 		traverseNTranslate(a.nodeList[0]);
-		b=graphZ;
+		b=graphZ; // Copy constructor of GraphZ
 	}
 	
-	static Node* translateProgNode (GraphZ::ProgNode* a)
+	/**\function translateProgNode
+	 *\brief Translates a ProgNode from GraphZ into a Node f
+	 *\param a pointer to ProgNode to translate
+	 *\return A pointer to equivalent Node
+	 */
+Node* translateProgNode (GraphZ::ProgNode* a)
 	{
 		GraphZ::NodeType myType = a->type();
-		if (myType == Variable)
+		if (myType == GraphZ::Variable)
 		{
 			Node* b = new Node("Variable");
 			return b;
 		}
-		else if (myType == Literal)
+		else if (myType == GraphZ::Literal)
 		{
 			Node* b = new Node("Literal");
 			return b;
 		}
-		else if (myType == Expression)
+		else if (myType == GraphZ::Expression)
 		{
 			Node* b = new Node("Expression");
 			return b;
@@ -89,8 +119,13 @@ namespace Translator
 
 	
 	}
+	/**\function translateZ
+	 *\brief Translates GraphZ to  Graph
+	 *\param a pointer to ProgNode to translate
+	 *\return A pointer to equivalent Node
+
 	
-	static bool translateZ (ProgGraph & pg)  {
+	bool translateZ (ProgGraph & pg)  {
 		for (int i = 0; i < pg.vertices.size(); i++) {
 			while (!s.empty()) {
 				ProgNode * node = s.top();
@@ -120,6 +155,6 @@ namespace Translator
 		}
 	}
 	
-	
+		 */
 	
 }

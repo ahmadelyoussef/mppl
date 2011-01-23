@@ -2,9 +2,34 @@
 #include<iostream>
 #include<string>
 #include    "MiniParser.h"
+#include "GRAPH.H"
+#include "Translator.h"
+
+/**\var
+ *\brief The Graph that will be used when parsing the input file
+ */
+Graph structure;
+typedef ProgGraph<string, string> TinyGraph;
+TinyGraph a;
+class TinyVisitor { public:
+    bool operator() (TinyGraph::ProgNode * node) {
+        cout << "node " << node->data << endl;
+        return true;
+    }
+    bool operator() (TinyGraph::ProgEdge * edge) {
+        cout << "edge " << edge <<  
+		" weight " << edge->weight << 
+		" from " << edge->from.idx <<
+		" to " << edge->to.idx << endl;
+        return true;
+    }
+};
+
+typedef TinyGraph::BFTraverse<TinyVisitor> TinyBFTraverse;
+
 int ANTLR3_CDECL main        (int argc, char *argv[])
 {
-
+	
     pANTLR3_UINT8            fName;
 
     pANTLR3_INPUT_STREAM    input;
@@ -60,8 +85,8 @@ int ANTLR3_CDECL main        (int argc, char *argv[])
         exit(1);
     }
 
-    psr            = MiniParserNew(tstream);
-
+    	psr            = MiniParserNew(tstream);
+	 
     if (psr == NULL)
     {
         fprintf(stderr, "Out of memory trying to allocate parser\n");
@@ -69,7 +94,11 @@ int ANTLR3_CDECL main        (int argc, char *argv[])
     }
 
     psr->pStructure(psr);
-
+	structure.DFS(structure.nodeList[0]);
+	Translator::translatetoZ(structure,a);
+	TinyVisitor tv;
+	TinyBFTraverse trav(tv,0);
+	trav(a);
 
     psr            ->free  (psr);            psr = NULL;
     tstream ->free  (tstream);            tstream = NULL;

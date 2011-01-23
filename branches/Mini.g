@@ -11,6 +11,7 @@ language = C;
 #include<string>
 using namespace std;
 #include<vector>
+extern Graph structure;
 } 
 
 
@@ -27,7 +28,7 @@ Graph ass;
 Graph cond;
 Graph vect;
 Graph Paire;
-Graph structure;
+//Graph structure;
 bool hidden=false;
 int index_add=0;
 int index_mult=0;
@@ -125,8 +126,8 @@ Loop.clear();
  
 }
 )* 'end' {
-
-structure.DFS(structure.nodeList[0]); 
+//structure.translate(structure.nodeList[0]);
+//structure.DFS(structure.nodeList[0]); 
 cout<<endl<<"Program ends"<<endl;};
 
 conditionalStatement returns [string result, string s]
