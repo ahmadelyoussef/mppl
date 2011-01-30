@@ -1,0 +1,10 @@
+Begin 
+var int1, int2;
+var a[];
+var p{};
+int1 takes 2;
+int2 takes 4;
+array takes [int1,int2];
+p takes {int2, int1};
+var int3 takes int1 + int2 * int1;
+end

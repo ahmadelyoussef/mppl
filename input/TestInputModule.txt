@@ -1,0 +1,9 @@
+Begin 
+x takes 3;
+y takes y+4;
+var y takes 3-y;
+end
+
+
+
+
