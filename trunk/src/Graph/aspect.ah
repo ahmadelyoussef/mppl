@@ -1,0 +1,100 @@
+#ifndef ASPECT_AH
+#define ASPECT_AH
+#include<fstream>
+#include<iostream>
+#include"GRAPH.H"
+#include <stdlib.h>
+#include <stdio.h>
+using namespace std;
+
+
+aspect dot {
+        int counter;
+        int temp;
+	bool zero_found;
+	dot() {
+		counter = 0; temp=0; zero_found=false;
+	} 
+        //advice"Node" :slice class { bool integer;};
+ 
+
+	advice execution("% Node::visit(...)") && that(node): after(Node& node) {
+        ofstream outfile;
+       
+	outfile.open("../src/Visual/graph.dot",ios::app);
+       if(node.name=="0")
+          zero_found=true;
+        if(node.name=="Begin") 
+           outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=circle,rank=sink,style=filled,color=white];"<<endl;
+        
+        else if(node.name=="Declaration"|| node.name=="Assignment"|| node.name=="conditionalStatement"|| node.name=="Loop")
+           outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=rectangle,rank=sink,style=filled,color=grey];"<<endl;
+
+       else  if(node.name=="is"|| node.name=="oris"|| node.name=="isnot"|| node.name=="Start" || node.name=="\"=\"" || node.name=="End"
+          || node.name=="greater" || node.name=="Increment" || node.name=="IntDecl" ||node.name=="ArrayDecl" ||node.name=="PairDecl"
+||node.name=="BoolDecl" ||node.name=="BoolDecl" || node.name=="not" || node.name=="\"_\"" || node.name=="\"*\""  ||node.name=="\"+\"" || 
+node.name=="\"/\"" ||node.name=="exp" ||node.name=="mod"||node.name=="\"*\"" ||node.name=="\"-\"" ||node.name=="lt" ||node.name=="lte"
+||node.name=="gt" ||node.name=="gte" ||node.name=="eq" ||node.name=="neq" ||node.name=="gte" ||node.name=="and" ||node.name=="or"
+||node.name=="xor" )
+           outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=diamond,rank=sink,style=filled,color=gray];"<<endl;
+
+
+       else  if(node.name=="int")
+             outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=ellipse,rank=sink,style=filled,color=red];"<<endl;
+      else  if(node.name=="boole")
+             outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=ellipse,rank=sink,style=filled,color=blue];"<<endl;
+      else if(node.name=="Pair")
+	     outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=ellipse,rank=sink,style=filled,color=yellow];"<<endl;
+      else if (node.name=="Array")
+             outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=ellipse,rank=sink,style=filled,color=green];"<<endl;
+      
+     else if(node.adjNodeList.size()==0 &&( (atoi(node.name.c_str()))!=0 || zero_found))
+             outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=box,rank=sink,style=filled,color=pink];"<<endl;
+ //outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=circle,rank=sink,style=filled,color=pink];"<<endl;
+
+else
+outfile<<"var"<<node.index<<"[label="<<node.name<<",shape=ellipse,rank=sink,style=filled,color=blue];"<<endl;
+
+for(int i=0;i<node.adjNodeList.size();i++)
+       {  Edge edg = node.adjNodeList[i];
+          counter++;
+         
+       
+          outfile<<"var"<<node.index<<" -> "<<"var"<<counter<<";"<<endl;
+          edg.getDstNode()->index=counter;
+        }
+       
+
+	}
+	advice execution(" % Graph::DFS(...)") : before() {
+	       ofstream outfile;
+               if(counter==0)
+                {outfile.open("../src/Visual/graph.dot");outfile<<"digraph g {graph[ordering=out];"<<endl;}
+               else
+                outfile.open("../src/Visual/graph.dot",ios::app);
+	        
+	}
+advice execution(" % Graph::DFS(...)") && that(g) && args(node): after(Graph& g,Node* node) {
+                temp++;
+		ofstream outfile;
+		outfile.open("../src/Visual/graph.dot",ios::app);
+              //  cout<<"counter:"<<counter<<endl;
+                //cout<<g.nodeList.size()<<endl;
+                //cout<<temp<<endl;
+                //cout<<node->name<<endl;
+	        
+                   
+ 		if(temp==g.nodeList.size() )
+                 outfile<<"}"<<endl;
+                
+             
+                
+}
+
+  /*advice construction("Node")
+                   && that(node) : before( Node& node ) {
+    node.integer = false;
+  }*/
+
+};
+#endif
