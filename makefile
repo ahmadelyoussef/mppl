@@ -1,0 +1,2 @@
+SourceBuild : 
+	cd src; $(MAKE);
