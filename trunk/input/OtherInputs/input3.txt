@@ -1,0 +1,18 @@
+Begin
+var p{};
+var d[];
+p takes {[1,2,3],3};
+d takes [1,2,3,4,5];
+var TEMP[];
+is(d[0] lt b and p{1} gte 4)
+do
+[
+loop(i:1->n,+1)
+do[
+TEMP[i] takes d[i];
+]
+]
+oris(d[0] lt 5)
+do[d[0] takes 0;]
+isnot do [p{0} takes 1;]
+end

@@ -1,0 +1,6 @@
+Begin
+var RESULT takes 1;
+loop(i:2->n,+1)
+do
+[ RESULT takes RESULT*i;]
+end

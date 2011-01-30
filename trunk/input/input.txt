@@ -1,0 +1,29 @@
+Begin
+var a takes 3;
+var fd takes [{1,false},{false,5*5/34*555+5- 2*3},{3,false}];
+var broom takes {false,[2,3,4,5]};
+var b takes 2/3*5-9*4*6;
+a takes 2*3*5+7-1;
+is (a lt b)
+	do
+	[
+		var c takes 3 mod 4;
+		loop (i:1->n,+2)
+		do
+		[
+			a takes 2;
+		]
+
+	]
+oris ( (a mod 2) lt (b *3 ))
+do
+[
+	a takes c mod 5;
+]
+
+isnot
+do
+[
+var d takes --2*3+5+-6*9-5;
+]
+end
