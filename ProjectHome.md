@@ -1,0 +1,1 @@
+The objective that has been kept in the mind, and has been given top priority while creating the mppl was to provide a programming language that is very readable and non-programmer friendly. It is meant to be an extensive tool for mathematicians with little to no programming experience.
